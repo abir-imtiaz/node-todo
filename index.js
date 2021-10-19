@@ -1,22 +1,24 @@
-const http = require("http");
+const path = require("path");
+const express = require("express");
 
-// console.log("I am here only");
+const logger = require("./middleware/logger");
 
-// const os = require("os");
+const app = express();
 
-// console.log(os.platform());
+// init middleware
+app.use(logger);
 
-// console.log(os.cpus());
+// default express middleware
+app.use(express.json);
 
-// const fs = require("fs");
+app.use(express.urlencoded({ extended: false }));
 
-const host = require("./host");
+// users api
+app.use("/api/users", require("./routes/api/users"));
 
-const host1 = new host();
+//static routes
+app.use(express.static(path.join(__dirname, "public")));
 
-http
-  .createServer((req, res) => {
-    res.write("I am here only");
-    res.end();
-  })
-  .listen(5000, () => console.log("server running..."));
+const port = process.env.PORT || 8000;
+
+app.listen(port, () => console.log(`Server started on port ${port}`));
